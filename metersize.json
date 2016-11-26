@@ -1,0 +1,18 @@
+{
+	"meter48": {
+		"min_range": 400,
+		"max_range": 1000
+	},
+	"meter72": {
+		"min_range": 400,
+		"max_range": 600
+	},
+	"meter96": {
+		"min_range": 300,
+		"max_range": 700
+	},
+	"meter144": {
+		"min_range": 180,
+		"max_range": 500
+	}
+}

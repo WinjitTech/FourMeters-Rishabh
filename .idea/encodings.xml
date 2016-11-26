@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/AutoTest.py" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Camera_Calibration.py" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Capture_Image.py" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Database.py" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Error_Logging.py" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Find_Angle.py" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Find_Basic_Details.py" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/GetBaseCardinals.py" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/GetCardinalContours.py" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/GetCurrentNeedle.py" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/GetCurrentNeedle_New.py" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/GetNeedleByThreshold.py" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/MainProcess.py" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/MeterImages" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Needlelog.txt" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/camerastatus.txt" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/createpyc.py" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/cropping.json" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/default.log" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/frame.json" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/metersize.json" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/readings.json" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/resetcalmet.py" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/sticky.txt" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/sticky_module.py" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/sweeptest.py" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/test.txt" charset="UTF-8" />
+  </component>
+</project>

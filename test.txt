@@ -1,0 +1,1 @@
+['AutoTest.py', '5', 'C:\\ProgramData\\Rishabh\\Auto', '96', 'x1', '500', 'movingiron', 'volts']
