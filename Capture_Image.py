@@ -6,9 +6,12 @@ from MainProcess import *
 import cv2
 
 
-def start_capture(meter, cardinal_number, img_name, img_path, mod_factor, size, suppression, cardinal_len):
-    frames_json = open(img_path + "\\Auto\\MeterImages\\Crop\\frame.json")
+def start_capture(meter, cardinal_number, img_name, img_path, mod_factor, size, suppression, cardinal_len, cursor,
+                  updown):
+    frames_json = open(img_path + "\\MeterImages\\Crop\\frame.json")
     data = json.load(frames_json)
+    frames_json.close()
+    # print(data)
     try:
         for meter_no in data:
             meter_crop = json.loads(data[meter_no])
@@ -19,28 +22,20 @@ def start_capture(meter, cardinal_number, img_name, img_path, mod_factor, size, 
             cropped_meter = meter[y1:y2, x1:x2]
             # cv2.imshow(str(meter_no), cropped_meter)
             # cv2.waitKey(0)
-            cv2.imwrite(img_path + "\\Auto\\MeterImages\\Crop\\" + str(meter_no) + "\\Needle.jpg", cropped_meter)
+            cv2.imwrite(img_path + "\\MeterImages\\Crop\\" + str(meter_no) + "\\Needle.jpg", cropped_meter)
             try:
-                # meter, angles, deflection, top_x, base_y, base_x, base_y = initprocess(img_path, cropped_meter, mod_factor,
-                #                                                                    size,
-                #                                                                    suppression, cardinal_len, meter_no)
-                m = initprocess(img_path, cropped_meter, mod_factor, size, suppression, cardinal_len, meter_no)
-                # print(meter_no, angles)
-                cv2.imwrite(img_path + '\\Auto\\MeterImages\\Crop\\' + str(meter_no)+"\\"+str(cardinal_number)+".jpg", m)
-                # print(img_path + '\\Auto\\MeterImages\\Crop\\' + str(meter_no)+"\\"+str(cardinal_number)+".jpg")
 
+                m, angles, deflections = initprocess(img_path, cropped_meter, mod_factor, size, meter_no)
+                angle = angles[cardinal_number - 1]
+                deflection = deflections[cardinal_number - 1]
+                print(angle, deflection)
+                cv2.imwrite(
+                    img_path + '\\MeterImages\\Crop\\' + str(meter_no) + "\\" + str(img_name) + ".jpg", m)
+                sql_query = "insert into AngleDeflectionReadings (MeterNo, CardinalNo, Angle, Deflection,UpDown) values(" + str(
+                    meter_no) + "," + str(cardinal_number) + "," + str(angle) + "," + str(deflection) + "," + str(
+                    updown) + ");"
+                cursor.execute(sql_query)
             except Exception, e:
                 print("from initprocess", str(e))
-
-        # return str(angles[cardinal_number - 1]), str(deflection[cardinal_number - 1]), top_x, base_y, base_x, base_y
     except Exception, e:
-        print(str(e))
-
-    # try:
-    #     meter, angles, deflection, top_x, base_y, base_x, base_y = initprocess(img_path, meter, mod_factor, size,
-    #                                                                            suppression, cardinal_len)
-    #     cv2.imwrite(img_path + '\\MeterImages\\' + img_name, meter)
-    #     print angles
-    #     return str(angles[cardinal_number - 1]), str(deflection[cardinal_number - 1]), top_x, base_y, base_x, base_y
-    # except Exception, e:
-    #     print "Capture Image in start_caputre: rec Image", str(e)
+        print("In Capture Image", str(e))

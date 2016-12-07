@@ -2,18 +2,19 @@
 # Create date: <Create Date,,>
 # Description: <Description,,>
 
-import cv2
 import math
+
 import numpy as np
+
+import cv2
 
 
 # TODO: Alternate method to detect needle
-import time
 
 
 def get_needle_tip(img_path, top_x, base_y, iteration, meter_no):
     try:
-        image = cv2.imread(img_path + "\\Auto\\MeterImages\\Crop\\"+str(meter_no)+"\\Needle.jpg", 0)
+        image = cv2.imread(img_path + "\\MeterImages\\Crop\\" + str(meter_no) + "\\Needle.jpg", 0)
         kernel = np.ones((5, 5), np.uint8)
         ret, thresh = cv2.threshold(image, 127, 255, cv2.THRESH_OTSU)
         dilation = cv2.dilate(thresh, kernel, iterations=iteration)
@@ -27,7 +28,6 @@ def get_needle_tip(img_path, top_x, base_y, iteration, meter_no):
             if 150 < n_lenght < 550:
                 needle_len.append(n_lenght)
                 corner += 1
-        # cv2.imshow("new", image)
         if not needle_len:
             return
         needle_len.sort(reverse=True)
@@ -35,7 +35,7 @@ def get_needle_tip(img_path, top_x, base_y, iteration, meter_no):
             x, y = i.ravel()
             n_lenght = math.sqrt((x - top_x) ** 2 + (y - base_y) ** 2)
             if n_lenght == needle_len[0]:
-                cv2.circle(dilation, (x, y), 10, (0, 0, 0), -1)
+                # cv2.circle(dilation, (x, y), 10, (0, 0, 0), -1)
                 # cv2.imshow("Needle Detection", dilation)
                 # print "Needle length: ",n_lenght
                 # cv2.waitKey(0)
@@ -45,9 +45,9 @@ def get_needle_tip(img_path, top_x, base_y, iteration, meter_no):
         return
 
 
-def get_needle_tip_for_sticky(img_path, top_x, base_y, iteration):
+def get_needle_tip_for_sticky(img_path, top_x, base_y, iteration, meter_no, i):
     try:
-        image = cv2.imread(img_path + "\\MeterImages\\temp.jpg", 0)
+        image = cv2.imread(img_path + "\\MeterImages\\Crop\\raw\\" + str(meter_no) + "\\" + str(i) + ".jpg", 0)
         kernel = np.ones((5, 5), np.uint8)
         ret, thresh = cv2.threshold(image, 127, 255, cv2.THRESH_OTSU)
         dilation = cv2.dilate(thresh, kernel, iterations=iteration)
@@ -61,11 +61,10 @@ def get_needle_tip_for_sticky(img_path, top_x, base_y, iteration):
             if 150 < n_lenght < 550:
                 needle_len.append(n_lenght)
                 corner += 1
-
     # cv2.imshow("new", image)
         # cv2.waitKey(0)
         if not needle_len:
-            print("Connot detect Needle :(")
+            print("Connot Detect Needle in sticky calculation")
             return
         needle_len.sort(reverse=True)
         for i in corners:

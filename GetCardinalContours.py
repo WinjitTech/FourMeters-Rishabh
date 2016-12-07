@@ -2,15 +2,16 @@
 # Create date: <Create Date,,>
 # Description: <python file to return cardinal contours>
 
+import math
+
+import numpy as np
 
 import cv2
-import math
-import numpy as np
 import Find_Angle
 
 
 def get_contours(img_path, min_range, max_range, meter_no):
-    meter_image = cv2.imread(img_path+"\\Auto\\MeterImages\\Crop\\"+str(meter_no)+"\\"+str(meter_no)+".jpg")
+    meter_image = cv2.imread(img_path + "\\MeterImages\\Crop\\" + str(meter_no) + "\\" + str(meter_no) + ".jpg")
     try:
         gray = cv2.cvtColor(meter_image, cv2.COLOR_BGR2GRAY)
         ret, thresh = cv2.threshold(gray, 127, 255, cv2.THRESH_OTSU)
@@ -22,9 +23,7 @@ def get_contours(img_path, min_range, max_range, meter_no):
         # Todo: find contours area between cardinal points area in image
 
         for cnt in contours:
-            # print "Outer: ", cv2.contourArea(cnt)
             if min_range <= cv2.contourArea(cnt) <= max_range:
-                # print "Inner: ", cv2.contourArea(cnt)
                 # (x, y), radius = cv2.minEnclosingCircle(cnt)
                 # cv2.circle(meter_image, (int(x), int(y)), 10, (0, 255, 0), 5)
                 cardinal.append(cnt)
@@ -36,7 +35,9 @@ def get_contours(img_path, min_range, max_range, meter_no):
 
 # TODO: Function to get contour at full deflection position contour
 def find_top_cardinal(contours, min_range, max_range, supression, img_path, meter_no):
-    image = cv2.imread(img_path+"\\Auto\\MeterImages\\Crop\\"+str(meter_no)+"\\"+str(meter_no)+".jpg")
+    image = cv2.imread(img_path + "\\MeterImages\\Crop\\" + str(meter_no) + "\\" + str(meter_no) + ".jpg", 0)
+    # cv2.imshow(str(meter_no), image)
+    # cv2.waitKey(0)
     if supression == "x1":
         i = 0
         for cnt in contours:
@@ -66,7 +67,10 @@ def find_top_cardinal(contours, min_range, max_range, supression, img_path, mete
         try:
             kernel = np.ones((5, 5), np.uint8)
             dilation = cv2.dilate(image, kernel, iterations=0)
-            corners = cv2.goodFeaturesToTrack(dilation, 100, 0.1, 10)
+            try:
+                corners = cv2.goodFeaturesToTrack(dilation, 100, 0.1, 10)
+            except Exception, e:
+                print(str(e))
             cx = cy = 0
             listy = []  # Todo : top x & y
             for i in corners:
@@ -85,14 +89,14 @@ def find_top_cardinal(contours, min_range, max_range, supression, img_path, mete
                     break
             return x2, y2
         except Exception, e:
-            print "In find_top_cardinal method in x2 or x2", str(e)
+            print "In find_top_cardinal method in x2 or x5", str(e)
 
 
 def draw_main_cardinals(img_path, contours, top_x, base_y, min_dist, min_range, max_range, meter_no, size):
     i = 0
     contour_list = []
     cardinal_cordinates = []
-    meter = cv2.imread(img_path+"\\Auto\\MeterImages\\Crop\\"+str(meter_no)+"\\"+str(meter_no)+".jpg")
+    meter = cv2.imread(img_path + "\\MeterImages\\Crop\\" + str(meter_no) + "\\" + str(meter_no) + ".jpg")
     try:
         for cnt in contours:
             # print "outer:", cv2.contourArea(cnt)
@@ -106,17 +110,18 @@ def draw_main_cardinals(img_path, contours, top_x, base_y, min_dist, min_range, 
                 dist = math.sqrt((x - top_x) ** 2 + (y - base_y) ** 2)
                 # Todo: only compare distance of zero cardinal and five cardinal
                 if size == "meter72":
-                    sub = 35
+                    sub = 12
                 else:
-                    sub = 45
+                    sub = 25
                 if min_dist - sub <= dist <= min_dist + sub:  # this is final dist >= min_dist - 25:
                     cv2.circle(meter, (int(x), int(y)), 2, 255, -1)
-                    # print "Inner:", dist
+                    # print "Inner_Dist:", dist
+                    # print "Inner area:", cv2.contourArea(cnt)
                     cv2.line(meter, (int(x), int(y)), (int(top_x), int(base_y)), (255, 0, 0), 1)
                     cardinal_cordinates.append((x, y))
                     contour_list.append(cnt)
                     i += 1
-        # print "cardinals", len(cardinal_cordinates)
+                    # print meter_no, len(cardinal_cordinates)
     except Exception, e:
         print "In draw_main_cardinals method:", str(e)
         return
@@ -139,8 +144,6 @@ def get_needle_angles(top_x, base_y, pointer, base_line, cardinal_coordinates):
                 angle_list.append(round(needle_angle, ndigits=2))
             else:
                 angle_list.append(round(-needle_angle, ndigits=2))
-            # print "from ang", len(angle_list)
-            # print angle_list
         return angle_list, cardinal_angle
     except Exception, e:
         print "In get_needle_angles method:", str(e)
@@ -150,7 +153,6 @@ def get_needle_angles(top_x, base_y, pointer, base_line, cardinal_coordinates):
 def draw_intermediate_cardinals(meter, base_contour, top_x, top_y):
     try:
         (base_x, base_y) = base_contour
-        # (top_x, top_y), radius = cv2.minEnclosingCircle(topcontour)
         cv2.line(meter, (int(base_x), int(base_y)), (int(top_x), int(base_y)), (0, 0, 255), 1)
         cv2.line(meter, (int(top_x), int(top_y)), (int(top_x), int(base_y)), (0, 0, 255), 1)
         return meter
