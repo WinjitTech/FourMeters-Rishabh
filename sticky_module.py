@@ -18,8 +18,10 @@ def sticky(img_path, meter_list):
     meter3_ang_list = []
     meter4_ang_list = []
     i = int(1)
+    # print("in sticky", len(meter_list))
     try:
         for meter in meter_list:
+            # cv2.imwrite(img_path + "\\MeterImages\\Crop\\raw\\" + str(time.time()) + ".jpg", meter)
             for meter_no in data:
                 meter_crop = json.loads(data[meter_no])
                 x1 = meter_crop.get("x1")
@@ -70,17 +72,37 @@ def sticky(img_path, meter_list):
                     print("from initprocess", str(e))
             i += 1
 
-        print(meter1_ang_list, meter2_ang_list)
+        # print(meter1_ang_list, meter2_ang_list)
+
+        sticky = open("C:\\ProgramData\\Rishabh\\Fourmeters\\sticky.txt", "w")
+        sticky_list = []
+        if len(meter1_ang_list) == len(set(meter1_ang_list)):
+            sticky_list.append(("1", 0))
+        else:
+            print "Meter is Sticky"
+            sticky_list.append(("1", 1))
+        if len(meter2_ang_list) == len(set(meter2_ang_list)):
+            sticky_list.append(("2", 0))
+        else:
+            print "Meter is Sticky"
+            sticky_list.append(("2", 1))
+        if len(meter3_ang_list) == len(set(meter3_ang_list)):
+            sticky_list.append(("3", 0))
+        else:
+            print "Meter is Sticky"
+            sticky_list.append(("3", 1))
+        if len(meter4_ang_list) == len(set(meter4_ang_list)):
+            sticky_list.append(("4", 0))
+        else:
+            print "Meter is Sticky"
+            sticky_list.append(("4", 1))
+        # print(meter1_ang_list)
+        # print(meter2_ang_list)
+        # print(meter3_ang_list)
+        # print(meter4_ang_list)
+        # print(sticky_list)
+        for m, flag in sticky_list:
+            sticky.write(str(m) + str(flag) + ",")
+        sticky.close()
     except Exception, e:
         print("In sticky module: ", str(e))
-
-        # sticky = open("C:\\ProgramData\\Rishabh\\sticky.txt", "w")
-        #
-        #    # print needle_angle_list
-        #    if len(needle_angle_list) == len(set(needle_angle_list)) and needle_angle_list == sorted(needle_angle_list, reverse=True):
-        #        print "Meter is Not sticky"
-        #        sticky.write("false")
-        #    else:
-        #        print "Meter is Sticky"
-        #        sticky.write("true")
-        #    sticky.close()

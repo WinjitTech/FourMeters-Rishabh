@@ -16,9 +16,9 @@ import setcalmet
 # Todo : Database connection
 try:
     # conn = pymssql.connect(server='WINJIT286\SA', user='sa', password='winjit@123', database='Rishabh', timeout=5)
-    conn = pymssql.connect(server='rohits-pc', user='sa', password='Winjit@123', database='Rishabh', timeout=10)
-    # conn = pymssql.connect(host=r"RISHABH-PC\SQLEXPRESS", user="sa", password="sa@123", database="Rishabh_Test",
-    #                        charset='utf8')
+    # conn = pymssql.connect(server='rohits-pc', user='sa', password='Winjit@123', database='Rishabh', timeout=10)
+    conn = pymssql.connect(host=r"RISHABH-PC\SQLEXPRESS", user="sa", password="sa@123", database="Rishabh_Test",
+                           charset='utf8')
     cursor = conn.cursor()
     cursor.execute("truncate table AngleDeflectionReadings")
     conn.commit()
@@ -31,8 +31,7 @@ except Exception as e:
 
 setcalmet.calmetsettings(sys.argv)
 try:
-    ser = serial.Serial('COM5', baudrate=4800, timeout=1)
-    no_of_cardinals = 6
+    ser = serial.Serial('COM1', baudrate=4800, timeout=1)
     # img_path = "C:\\ProgramData\\Rishabh\\Auto"
     start = '\x02'
     end = '\x03'
@@ -62,8 +61,18 @@ try:
             if fsd > 200:
                 electrical_parameter = "Z4"
 
-        if "am" in electrical_parameter:
-            electrical_parameter = "Z8"
+        if "ma" in electrical_parameter:
+            if fsd <= 1:
+                electrical_parameter = "Z5"
+            if 1 < fsd <= 10:
+                electrical_parameter = "Z6"
+            if 10 < fsd <= 100:
+                electrical_parameter = "Z7"
+        if "amp" in electrical_parameter:
+            if fsd <= 1:
+                electrical_parameter = "Z8"
+            if fsd > 1:
+                electrical_parameter = "Z9"
 
         # Todo :set frequency for calmet
         frequency = str(sys.argv[8]).lower()
@@ -173,31 +182,53 @@ try:
     cap = cv2.VideoCapture(0)
     cap.set(3, 2592)
     cap.set(4, 2048)
-    _, meter = cap.read()
-    _, meter = cap.read()
-    _, meter = cap.read()
-    meter_list = []
+    # _, meter = cap.read()
+    # meter_list.append(meter)
+    # cv2.imshow("bk", meter)
+    # cv2.waitKey(0)
+    # j=0
     while current_voltage > 0:
         current_voltage -= step
         time.sleep(0.04)
         ser.write('\x02N' + str(current_voltage) + '\x03')
         time.sleep(0.04)
-        _, meter = cap.read()
-        meter_list.append(meter)
         if str(current_voltage) in arr_cardinals:
             print "Current_Voltage", current_voltage, "Cardinal No.", no_of_cardinals
-            time.sleep(0.5)
+            # del meter_list[-2]
+            time.sleep(1)
             # Todo: card angle and needle angle
-            for f in range(0, 3):
+            for f in range(0, 5):
                 ret, frame = cap.read()
             resized_image = cv2.resize(frame, (1024, 900))
-            img_name = str(no_of_cardinals) + "UptoDown.jpg"
+            img_name = str(no_of_cardinals) + "UptoDown"
             # Todo : Accuracy Call
             Capture_Image.start_capture(frame, no_of_cardinals, img_name, img_path, mod_factor, size, suppression,
                                         cardinal_len, cursor, updown=1)
             no_of_cardinals -= 1
+            for f in range(0, 5):
+                ret, frame = cap.read()
 
-    meter_list = meter_list[3:]
+        # for i in range(0, 3):
+        _, meter = cap.read()
+        _, meter = cap.read()
+        _, meter = cap.read()
+        meter_list.append(meter)
+        # cv2.imshow(str(j), meter)
+        # cv2.waitKey(0)
+        # j += 1
+    d = discard = int(rate / cardinal_len)
+    print("initial meters", len(meter_list))
+
+    for i in range(1, cardinal_len):
+        meter_list.pop(d)
+        meter_list.pop(d + 1)
+        discard -= 1
+        d += discard
+    # meter_list.pop(0)
+    meter_list.pop(0)
+    meter_list.pop(0)
+    print("last pop meters", len(meter_list))
+
     time.sleep(0.1)
     ser.write('\x02K\x03')
     time.sleep(0.1)
@@ -210,25 +241,30 @@ try:
     # Todo:    Down to up
     current_voltage = 0
     no_of_cardinals = 1
-    # while current_voltage <= fsd:
-    #     current_voltage += step
-    #     time.sleep(0.04)
-    #     ser.write('\x02N' + str(current_voltage) + '\x03')
-    #     time.sleep(0.04)
-    #     meter = cap.read()
-    # meter_list.append(meter)
-    # if str(current_voltage) in arr_cardinals:
-    #     print "Current_Voltage", current_voltage, "Cardinal No.", no_of_cardinals
-    #     time.sleep(0.5)
-    #     # Todo: card angle and needle angle
-    #     for f in range(0, 3):
-    #         ret, frame = cap.read()
-    #     resized_image = cv2.resize(frame, (1024, 900))
-    #     img_name = str(no_of_cardinals) + "DowntoUp.jpg"
-    #     # Todo : Accuracy Call
-    #     Capture_Image.start_capture(frame, no_of_cardinals, img_name, img_path, mod_factor, size, suppression,
-    #                                 cardinal_len, cursor, updown=0)
-    #     no_of_cardinals += 1
+    while current_voltage <= fsd:
+        current_voltage += step
+        time.sleep(0.04)
+        ser.write('\x02N' + str(current_voltage) + '\x03')
+        time.sleep(0.04)
+        # _, meter = cap.read()
+        # _, meter = cap.read()
+        # _, meter = cap.read()
+        # meter_list.append(meter)
+        if str(current_voltage) in arr_cardinals:
+            print "Current_Voltage", current_voltage, "Cardinal No.", no_of_cardinals
+            time.sleep(1)
+            # Todo: card angle and needle angle
+            for f in range(0, 5):
+                ret, frame = cap.read()
+            resized_image = cv2.resize(frame, (1024, 900))
+            img_name = str(no_of_cardinals) + "DowntoUp"
+            # Todo : Accuracy Call
+            Capture_Image.start_capture(frame, no_of_cardinals, img_name, img_path, mod_factor, size, suppression,
+                                        cardinal_len, cursor, updown=0)
+            no_of_cardinals += 1
+            # _, meter = cap.read()
+            # _, meter = cap.read()
+            # _, meter = cap.read()
     ser.write('\x02K\x03')
     time.sleep(0.1)
     ser.write('\x02N0.0000\x03')
@@ -236,7 +272,6 @@ try:
     # Todo: calculate sticky
     # updown = 1
     sticky_module.sticky(img_path, meter_list)
-
     conn.commit()
     conn.close()
 except Exception, e:

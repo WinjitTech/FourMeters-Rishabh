@@ -31,6 +31,8 @@ def get_cardianls_from_image(meter_no, img_path, supression, min_range, max_rang
                                                                                                meter_no, size)
 
     img = GetCardinalContours.draw_intermediate_cardinals(img, (base_x, base_y), top_x, top_y)
+    # cv2.imshow(str(meter_no), img)
+    # cv2.waitKey(0)
     cv2.imwrite(img_path + "\\MeterImages\\Crop\\" + str(meter_no) + "\\" + "cardinals.jpg", img)
     meterinfo["meter" + str(meter_no)] = {
             "base_x": str(base_x),
