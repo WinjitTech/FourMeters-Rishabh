@@ -6,9 +6,8 @@ import py_compile
 import glob
 
 try:
-        for file in glob.glob("*.py"):
-                py_compile.compile(file)
-
+        for f in glob.glob("*.py"):
+                py_compile.compile(f)
         print ("Success...!!!")
 except Exception, e:
         print str(e)

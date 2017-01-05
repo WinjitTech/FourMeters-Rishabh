@@ -21,11 +21,9 @@ def get_contours(img_path, min_range, max_range, meter_no):
             return
         cardinal = []
         # Todo: find contours area between cardinal points area in image
-
         for cnt in contours:
             if min_range <= cv2.contourArea(cnt) <= max_range:
-                # (x, y), radius = cv2.minEnclosingCircle(cnt)
-                # cv2.circle(meter_image, (int(x), int(y)), 10, (0, 255, 0), 5)
+                # print("Selected contours", cv2.contourArea(cnt))
                 cardinal.append(cnt)
         return cardinal
     except Exception, e:
@@ -36,8 +34,6 @@ def get_contours(img_path, min_range, max_range, meter_no):
 # TODO: Function to get contour at full deflection position contour
 def find_top_cardinal(contours, min_range, max_range, supression, img_path, meter_no):
     image = cv2.imread(img_path + "\\MeterImages\\Crop\\" + str(meter_no) + "\\" + str(meter_no) + ".jpg", 0)
-    # cv2.imshow(str(meter_no), image)
-    # cv2.waitKey(0)
     if supression == "x1":
         i = 0
         for cnt in contours:
@@ -53,11 +49,7 @@ def find_top_cardinal(contours, min_range, max_range, supression, img_path, mete
                         top_y = int(round(sum(cy) / len(cy)))
                         top_x = (top_x + x) / 2
                         top_y = (top_y + y) / 2
-                        # cv2.circle(image, (int(x), int(y)), 10, (0, 255, 0), 5)
-                        # cv2.imshow("cvhj", image)
-                        # cv2.waitKey(0)
                         return int(top_x), int(top_y)
-                        # return x, y
                     i += 1
             except Exception, e:
                 print "find_top_cardinal method in x1", str(e)
@@ -116,7 +108,7 @@ def draw_main_cardinals(img_path, contours, top_x, base_y, min_dist, min_range, 
                 if min_dist - sub <= dist <= min_dist + sub:  # this is final dist >= min_dist - 25:
                     cv2.circle(meter, (int(x), int(y)), 2, 255, -1)
                     # print "Inner_Dist:", dist
-                    # print "Inner area:", cv2.contourArea(cnt)
+                    print "Selected area:", cv2.contourArea(cnt)
                     cv2.line(meter, (int(x), int(y)), (int(top_x), int(base_y)), (255, 0, 0), 1)
                     cardinal_cordinates.append((x, y))
                     contour_list.append(cnt)

@@ -1,24 +1,26 @@
+import glob
+import os
+import pymssql
+import sys
+import time
+
+import serial
+
+import pymsgbox
+
+import cv2
+import Capture_Image
 import sticky_module
 
 __author__ = 'RohitSalunke'
 
-import pymssql
-import serial
-import sys
-import time
-import cv2
-import Capture_Image
-import setcalmet
-# config = open("C:\\ProgramData\\Rishabh\\Fourmeters\\rishabh.config", "r")
-# json_data = json.load(config)
-# img_path = json_data["img_path"]
-# config.close()
+
 # Todo : Database connection
 try:
-    # conn = pymssql.connect(server='WINJIT286\SA', user='sa', password='winjit@123', database='Rishabh', timeout=5)
+    conn = pymssql.connect(server='WINJIT286\SA', user='sa', password='winjit@123', database='Rishabh', timeout=5)
     # conn = pymssql.connect(server='rohits-pc', user='sa', password='Winjit@123', database='Rishabh', timeout=10)
-    conn = pymssql.connect(host=r"RISHABH-PC\SQLEXPRESS", user="sa", password="sa@123", database="Rishabh_Test",
-                           charset='utf8')
+    # conn = pymssql.connect(host=r"RISHABH-PC\SQLEXPRESS", user="sa", password="sa@123", database="Rishabh_Test",
+    #                        charset='utf8')
     cursor = conn.cursor()
     cursor.execute("truncate table AngleDeflectionReadings")
     conn.commit()
@@ -29,9 +31,8 @@ except Exception as e:
 
 # Todo : set calmet
 
-setcalmet.calmetsettings(sys.argv)
 try:
-    ser = serial.Serial('COM1', baudrate=4800, timeout=1)
+    ser = serial.Serial('COM5', baudrate=4800, timeout=1)
     # img_path = "C:\\ProgramData\\Rishabh\\Auto"
     start = '\x02'
     end = '\x03'
@@ -46,6 +47,7 @@ try:
         size = "meter" + str(sys.argv[3])
         suppression = str(sys.argv[4])
         fsd = float(sys.argv[5])
+
         working_principle = str(sys.argv[6]).lower()
         electrical_parameter = str(sys.argv[7]).lower()
         # Todo : Volt settings
@@ -105,9 +107,9 @@ try:
         img_path = "C:\\ProgramData\\Rishabh\\Fourmeters"
         size = "meter96"
         suppression = "x1"
-        fsd = float(1)
-        electrical_parameter = "amp"
-        frequency = "50Hz"
+        fsd = float(300)
+        electrical_parameter = "volts"
+        frequency = "60"
 
         if "mv" in electrical_parameter:
             electrical_parameter = "Z0"
@@ -154,7 +156,10 @@ try:
         arr_cardinals.append(str(current_voltage))
     del arr_cardinals[-1]
     current_voltage = fsd
-    rate = 80
+    if no_of_cardinals == 4:
+        rate = 80
+    else:
+        rate = 90
     step = (fsd / rate)
     mod_factor = mod_factor_list[no_of_cardinals - 1]
     s = '\x02Z0,F1,N00.00000,O\x03'
@@ -182,11 +187,9 @@ try:
     cap = cv2.VideoCapture(0)
     cap.set(3, 2592)
     cap.set(4, 2048)
-    # _, meter = cap.read()
-    # meter_list.append(meter)
-    # cv2.imshow("bk", meter)
-    # cv2.waitKey(0)
-    # j=0
+
+    # Todo: start updown cycle
+    # i = 1
     while current_voltage > 0:
         current_voltage -= step
         time.sleep(0.04)
@@ -207,15 +210,13 @@ try:
             no_of_cardinals -= 1
             for f in range(0, 5):
                 ret, frame = cap.read()
-
         # for i in range(0, 3):
         _, meter = cap.read()
         _, meter = cap.read()
         _, meter = cap.read()
         meter_list.append(meter)
-        # cv2.imshow(str(j), meter)
-        # cv2.waitKey(0)
-        # j += 1
+        # cv2.imwrite(img_path+"\\MeterImages\\Crop\\raw_1\\"+str(i)+".jpg", meter)
+        # i += 1
     d = discard = int(rate / cardinal_len)
     print("initial meters", len(meter_list))
 
@@ -228,7 +229,6 @@ try:
     meter_list.pop(0)
     meter_list.pop(0)
     print("last pop meters", len(meter_list))
-
     time.sleep(0.1)
     ser.write('\x02K\x03')
     time.sleep(0.1)
@@ -241,6 +241,8 @@ try:
     # Todo:    Down to up
     current_voltage = 0
     no_of_cardinals = 1
+
+    # Todo: start downup cycle
     while current_voltage <= fsd:
         current_voltage += step
         time.sleep(0.04)
@@ -262,25 +264,35 @@ try:
             Capture_Image.start_capture(frame, no_of_cardinals, img_name, img_path, mod_factor, size, suppression,
                                         cardinal_len, cursor, updown=0)
             no_of_cardinals += 1
-            # _, meter = cap.read()
-            # _, meter = cap.read()
-            # _, meter = cap.read()
+
+    time.sleep(0.1)
     ser.write('\x02K\x03')
     time.sleep(0.1)
     ser.write('\x02N0.0000\x03')
     time.sleep(0.1)
     # Todo: calculate sticky
     # updown = 1
-    sticky_module.sticky(img_path, meter_list)
+    for i in range(1, 4):
+        test = img_path + "\\MeterImages\\Crop\\raw\\" + str(i) + "\\*"
+        r = glob.glob(test)
+        for j in r:
+            os.remove(j)
+
+    for i in range(1, 4):
+        test = img_path + "\\MeterImages\\Crop\\sticky\\" + str(i) + "\\*"
+        r = glob.glob(test)
+        for j in r:
+            os.remove(j)
+    sticky_module.sticky(img_path, meter_list, size)
     conn.commit()
     conn.close()
 except Exception, e:
     print("In MainClass", str(e))
+    if "OutOfMemoryError" in str(e):
+        pymsgbox.alert('Insufficient memory to cater images ! \n         Program has terminated', 'Memory Exception')
+    conn.commit()
+    conn.close()
 
 finally:
     ser.write('\x02K\x03')
     time.sleep(0.1)
-    # s = '\x02Z0,F0,N00.00000,S\x03'
-    # ser.write(s)
-# Todo : start sticky
-min_deflection_for_sticky = float(0.50)

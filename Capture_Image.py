@@ -11,7 +11,6 @@ def start_capture(meter, cardinal_number, img_name, img_path, mod_factor, size, 
     frames_json = open(img_path + "\\MeterImages\\Crop\\frame.json")
     data = json.load(frames_json)
     frames_json.close()
-    # print(data)
     try:
         for meter_no in data:
             meter_crop = json.loads(data[meter_no])

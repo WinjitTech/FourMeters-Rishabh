@@ -2,8 +2,9 @@
 # Create date: <Create Date,,>
 # Description: <Description,,>
 
-import serial
 import time
+
+import serial
 
 ser = serial.Serial('COM1', baudrate=4800, timeout=1)
 ser.write('\x02K\x03')

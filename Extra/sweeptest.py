@@ -15,7 +15,7 @@ try:
     fsd = float(1)
     ser.write('\x02K\x03')
     time.sleep(1)
-    ser.write('\x02Z8,F1,N1.00000,O\x03')
+    ser.write('\x02Z9,F1,N1.00000,O\x03')
     time.sleep(2)
     current_voltage = fsd
     step = float(fsd / 120)

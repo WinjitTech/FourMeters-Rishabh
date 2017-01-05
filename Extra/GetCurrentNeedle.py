@@ -2,9 +2,11 @@
 # Create date: <Create Date,,>
 # Description: <Description,,>
 
-import cv2
 import math
+
 import numpy as np
+
+import cv2
 
 
 def get_needle_tip(img_path, top_x, base_y, iteration):

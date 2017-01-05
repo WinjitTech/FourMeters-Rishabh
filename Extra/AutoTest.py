@@ -6,13 +6,15 @@
 import glob
 import json
 import os
-import serial
 import time
 import pymssql
+import sys
+
+import serial
+
 import sticky_module
 import cv2
 import Capture_Image
-import sys
 
 
 def auto_tune_new():

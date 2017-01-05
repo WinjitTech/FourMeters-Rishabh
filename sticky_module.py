@@ -8,11 +8,14 @@ import GetNeedleByThreshold
 import Find_Angle
 
 
-def sticky(img_path, meter_list):
+def sticky(img_path, meter_list, size):
     frames_json = open(img_path + "\\MeterImages\\Crop\\frame.json")
     data = json.load(frames_json)
     frames_json.close()
-    iterate = 3
+    if size == "meter48" or size == "meter144":
+        iterate = 3
+    else:
+        iterate = 2
     meter1_ang_list = []
     meter2_ang_list = []
     meter3_ang_list = []
@@ -42,12 +45,13 @@ def sticky(img_path, meter_list):
                     base_y = float(meter_info["base_y"])
                     top_x = float(meter_info["top_x"])
                     top_y = float(meter_info["top_y"])
-
+                    min_dist = float(meter_info["min_dist"])
                     needle_x, needle_y = GetNeedleByThreshold.get_needle_tip_for_sticky(img_path, top_x, base_y,
-                                                                                        iterate, meter_no, i)
+                                                                                        iterate, meter_no, i, min_dist)
                     if not needle_x and not needle_y:
                         needle_x, needle_y = GetNeedleByThreshold.get_needle_tip_for_sticky(img_path, top_x, base_y,
-                                                                                            meter_no, iterate - 1, i)
+                                                                                            meter_no, iterate - 1, i,
+                                                                                            min_dist)
 
                     pointer = ((needle_x, needle_y), (top_x, base_y))
                     base_line = ((base_x, base_y), (top_x, base_y))
@@ -77,21 +81,25 @@ def sticky(img_path, meter_list):
         sticky = open("C:\\ProgramData\\Rishabh\\Fourmeters\\sticky.txt", "w")
         sticky_list = []
         if len(meter1_ang_list) == len(set(meter1_ang_list)):
+            print "Meter is not Sticky"
             sticky_list.append(("1", 0))
         else:
             print "Meter is Sticky"
             sticky_list.append(("1", 1))
         if len(meter2_ang_list) == len(set(meter2_ang_list)):
+            print "Meter is not Sticky"
             sticky_list.append(("2", 0))
         else:
             print "Meter is Sticky"
             sticky_list.append(("2", 1))
         if len(meter3_ang_list) == len(set(meter3_ang_list)):
+            print "Meter is not Sticky"
             sticky_list.append(("3", 0))
         else:
             print "Meter is Sticky"
             sticky_list.append(("3", 1))
         if len(meter4_ang_list) == len(set(meter4_ang_list)):
+            print "Meter is not Sticky"
             sticky_list.append(("4", 0))
         else:
             print "Meter is Sticky"

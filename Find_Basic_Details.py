@@ -10,7 +10,7 @@ def get_cardianls_from_image(meter_no, img_path, supression, min_range, max_rang
     meter_info = open(img_path + "\\MeterImages\\Crop\\" + str(meter_no) + "\\" + str(meter_no) + ".json", "w")
     meterinfo = {}
     cardinal_coordinates = []
-    base_x, base_y = GetBaseCardinals.zero_needle_position(img_path, iterate, meter_no)
+    base_x, base_y = GetBaseCardinals.zero_needle_position(img_path, iterate, meter_no, size)
 
     # Todo: Generate all contours array
     contour_array = GetCardinalContours.get_contours(img_path, min_range, max_range, meter_no)
@@ -40,7 +40,8 @@ def get_cardianls_from_image(meter_no, img_path, supression, min_range, max_rang
             "top_x": str(top_x),
             "top_y": str(top_y),
             "cardinal_coordinates": cardinal_coordinates,
-            "Total_cardinals_found": len(cardinal_coordinates)
+        "Total_cardinals_found": len(cardinal_coordinates),
+        "min_dist": str(min_dist)
         }
     meter_info.write(json.JSONEncoder().encode(meterinfo))
     meter_info.close()
