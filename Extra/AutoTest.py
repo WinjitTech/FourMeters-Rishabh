@@ -20,7 +20,7 @@ import Capture_Image
 def auto_tune_new():
     try:
         conn = pymssql.connect(server='winjit214', user='sa', password='winjit@123', database='Rishabh', timeout=10)
-        conn = pymssql.connect(server='rohits-pc', user='sa', password='Winjit@123', database='Rishabh', timeout=10)
+        # conn = pymssql.connect(server='rohits-pc', user='sa', password='Winjit@123', database='Rishabh', timeout=10)
         # conn = pymssql.connect(host=r"RISHABH-PC\SQLEXPRESS", user="sa", password="sa@123", database="Rishabh_Test",
         #                        charset='utf8')
         cursor = conn.cursor()
@@ -85,9 +85,9 @@ def auto_tune_new():
                 img_path = "C:\\Users\\rohitsalunke\\PycharmProjects\\RishabhWebCam\\Auto Program"
                 # mod_factor = 1.11
                 size = "meter96"
-                suppression = "x2"
+                suppression = "x1"
                 fsd = float(5)
-                electrical_parameter = "Amps"
+                electrical_parameter = "volts"
                 if "vo" in electrical_parameter:
                     electrical_parameter = "Z4"
                 if "amp" in electrical_parameter:
@@ -143,7 +143,7 @@ def auto_tune_new():
             meter_list.append(frame[y1:y2, x1:x2])
             if str(current_voltage) in arr_cardinals:
                 print "Current_Voltage", current_voltage, "Cardinal No.", no_of_cardinals
-                time.sleep(1.5)
+                time.sleep(3)
                 # Todo: card angle and needle angle
                 for f in range(0, 5):
                     ret, frame = cap.read()

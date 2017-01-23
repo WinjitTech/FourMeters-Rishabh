@@ -7,10 +7,12 @@ import serial
 
 
 
+
+
 # Todo : set calmet
 try:
 
-    ser = serial.Serial('COM5', baudrate=4800, timeout=1)
+    ser = serial.Serial('COM6', baudrate=4800, timeout=1)
     # start = '\x02'
     # end = '\x03'
 
@@ -126,8 +128,8 @@ try:
         rate = 90
     step = (fsd / rate)
 
-    s = '\x02Z0,F1,N00.00000,O\x03'
-    # ser.write(s)
+    s = '\x02Z4,F1,N00.00000,O\x03'
+    ser.write(s)
     time.sleep(0.1)
     ser.write('x02' + str(electrical_parameter) + "," + str(frequency) + '\x03')
     time.sleep(0.5)

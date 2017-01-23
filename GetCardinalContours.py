@@ -128,14 +128,17 @@ def get_needle_angles(top_x, base_y, pointer, base_line, cardinal_coordinates):
     try:
         for x, y in cardinal_coordinates:
             cardinal = ((float(x), float(y)), (top_x, base_y))
-            cardinal_ang = round(Find_Angle.ang(cardinal, base_line), ndigits=2)
+            # cardinal_ang = round(Find_Angle.ang(cardinal, base_line), ndigits=2)
+            cardinal_ang = Find_Angle.ang(cardinal, base_line)
             cardinal_angle.append(cardinal_ang)
             base_and_pointer_angle = Find_Angle.ang(base_line, pointer)
             needle_angle = Find_Angle.ang(cardinal, pointer)
             if base_and_pointer_angle >= cardinal_ang:
-                angle_list.append(round(needle_angle, ndigits=2))
+                # angle_list.append(round(needle_angle, ndigits=2))
+                angle_list.append(needle_angle)
             else:
-                angle_list.append(round(-needle_angle, ndigits=2))
+                # angle_list.append(round(-needle_angle, ndigits=2))
+                angle_list.append(-needle_angle)
         return angle_list, cardinal_angle
     except Exception, e:
         print "In get_needle_angles method:", str(e)

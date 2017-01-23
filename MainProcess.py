@@ -66,7 +66,8 @@ def initprocess(img_path, frame, mod_factor, size, meter_no):
             len_angle = len(angle_list)
             count = 0
             while count < len_angle:
-                tolerance.append(round((angle_list[count]) * mod_factor, ndigits=2))
+                # tolerance.append(round((angle_list[count]) * mod_factor, ndigits=2))
+                tolerance.append(angle_list[count] * mod_factor)
                 count += 1
 
             cv2.line(frame, (int(needle_x), int(needle_y)), (int(top_x), int(base_y)), (0, 255, 0), 1)

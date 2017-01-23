@@ -24,7 +24,8 @@ def ang(lineA, lineB):
         # Get angle in radians and then convert to degrees
         angle = math.acos(dot_prod / magB / magA)
         # Basically doing angle <- angle mod 360
-        ang_deg = round(math.degrees(angle) % 360, ndigits=4)
+        # ang_deg = round(math.degrees(angle) % 360, ndigits=4)
+        ang_deg = math.degrees(angle) % 360
 
         if ang_deg - 180 >= 0:
             # As in if statement

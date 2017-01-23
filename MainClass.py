@@ -32,7 +32,7 @@ except Exception as e:
 # Todo : set calmet
 
 try:
-    ser = serial.Serial('COM5', baudrate=4800, timeout=1)
+    ser = serial.Serial('COM6', baudrate=4800, timeout=1)
     # img_path = "C:\\ProgramData\\Rishabh\\Auto"
     start = '\x02'
     end = '\x03'
@@ -107,9 +107,9 @@ try:
         img_path = "C:\\ProgramData\\Rishabh\\Fourmeters"
         size = "meter96"
         suppression = "x1"
-        fsd = float(300)
+        fsd = float(15)
         electrical_parameter = "volts"
-        frequency = "60"
+        frequency = "50"
 
         if "mv" in electrical_parameter:
             electrical_parameter = "Z0"
@@ -145,9 +145,19 @@ try:
             frequency = "F3"
         if "fext" in frequency:
             frequency = "F4"
-        # working_principle = "movingcoil"
-        for i in range(0, no_of_cardinals):
-            mod_factor_list.append(float(1.11))
+        working_principle = "movingcoil"
+        if working_principle == "movin":
+            for i in range(0, no_of_cardinals):
+                mod_factor_list.append(float(1.11))
+        else:
+            tblname = suppression + "Suprression_" + str(no_of_cardinals) + "Div"
+            sql_query = "SELECT * FROM " + tblname
+            cursor.execute(sql_query)
+            mod_factor_list = []
+            for row in cursor:
+                mod_factor_list.append(float(row[2]))
+    mod_factor_list = mod_factor_list[0:cardinal_len]
+    # mod_factor_list.reverse()
     current_voltage = fsd
     next_voltage = fsd / no_of_cardinals
     arr_cardinals = [str(fsd)]
@@ -198,12 +208,14 @@ try:
         if str(current_voltage) in arr_cardinals:
             print "Current_Voltage", current_voltage, "Cardinal No.", no_of_cardinals
             # del meter_list[-2]
-            time.sleep(1)
+            time.sleep(3)
             # Todo: card angle and needle angle
             for f in range(0, 5):
                 ret, frame = cap.read()
             resized_image = cv2.resize(frame, (1024, 900))
             img_name = str(no_of_cardinals) + "UptoDown"
+            mod_factor = mod_factor_list[no_of_cardinals - 1]
+
             # Todo : Accuracy Call
             Capture_Image.start_capture(frame, no_of_cardinals, img_name, img_path, mod_factor, size, suppression,
                                         cardinal_len, cursor, updown=1)
@@ -254,12 +266,13 @@ try:
         # meter_list.append(meter)
         if str(current_voltage) in arr_cardinals:
             print "Current_Voltage", current_voltage, "Cardinal No.", no_of_cardinals
-            time.sleep(1)
+            time.sleep(3)
             # Todo: card angle and needle angle
             for f in range(0, 5):
                 ret, frame = cap.read()
             resized_image = cv2.resize(frame, (1024, 900))
             img_name = str(no_of_cardinals) + "DowntoUp"
+            mod_factor = mod_factor_list[no_of_cardinals - 1]
             # Todo : Accuracy Call
             Capture_Image.start_capture(frame, no_of_cardinals, img_name, img_path, mod_factor, size, suppression,
                                         cardinal_len, cursor, updown=0)

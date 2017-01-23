@@ -25,8 +25,8 @@ def start_capture(meter, cardinal_number, img_name, img_path, mod_factor, size, 
             try:
 
                 m, angles, deflections = initprocess(img_path, cropped_meter, mod_factor, size, meter_no)
-                angle = angles[cardinal_number - 1]
-                deflection = deflections[cardinal_number - 1]
+                angle = round(angles[cardinal_number - 1], ndigits=4)
+                deflection = round(deflections[cardinal_number - 1], ndigits=4)
                 print(angle, deflection)
                 cv2.imwrite(
                     img_path + '\\MeterImages\\Crop\\' + str(meter_no) + "\\" + str(img_name) + ".jpg", m)
